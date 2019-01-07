@@ -155,14 +155,26 @@
   	(exec_jmp vm 'R0)	  
 )
 
-(defun exec_cmp (vm reg1 reg2) ;à faire
-  	(let ((var1 (vm_get_register vm reg1)) (var2 (vm_get_register vm reg2)))
-		(cond
-	   		((= var1 var2) (vm_set_register vm 'FEQ 1) (vm_set_register vm 'FGT 0) (vm_set_register vm 'FLT 0))
-	     	((> var1 var2) (vm_set_register vm 'FGT 1) (vm_set_register vm 'FEQ 0) (vm_set_register vm 'FLT 0))
-	      	((< var1 var2) (vm_set_register vm 'FLT 1) (vm_set_register vm 'FEQ 0) (vm_set_register vm 'FGT 0))   
-	   	))
-)
+;(defun exec_cmp (vm reg1 reg2) ;à faire
+;  	(let ((var1 (vm_get_register vm reg1)) (var2 (vm_get_register vm reg2)))
+;		(cond
+;	   		((= var1 var2) (vm_set_register vm 'FEQ 1) (vm_set_register vm 'FGT 0) (vm_set_register vm 'FLT 0))
+;	     	((> var1 var2) (vm_set_register vm 'FGT 1) (vm_set_register vm 'FEQ 0) (vm_set_register vm 'FLT 0))
+;	      	((< var1 var2) (vm_set_register vm 'FLT 1) (vm_set_register vm 'FEQ 0) (vm_set_register vm 'FGT 0))   
+;	   	))
+;)
+(defun exec_cmp (vm reg1 reg2)
+  (let ((r1 (vm_get_register vm reg1)) (r2 (vm_get_register vm reg1)))
+  (cond
+    ((eql r1 r2) (vm_set_register vm 'FEQ 1) (vm_set_register vm 'FLT 0) (vm_set_register vm 'FGT 0))
+    ((> r1 r2) (vm_set_register vm 'FGT 1) (vm_set_register vm 'FLT 0) (vm_set_register vm 'FEQ 0))
+    ((< r1 r2) (vm_set_register vm 'FLT 1) (vm_set_register vm 'FGT 0) (vm_set_register vm 'FEQ 0))
+    ((>= r1 r2) (vm_set_register vm 'FGT 1) (vm_set_register vm 'FLT 0) (vm_set_register vm 'FEQ 1))
+    ((=< r1 r2) (vm_set_register vm 'FLT 1) (vm_set_register vm 'FGT 0) (vm_set_register vm 'FEQ 1))
+    ))
+  ;après le cond, mettre à 101 soit LT and GT
+  
+  )
 
 (defun exec_jlt (vm lbl)
 	(if (EQL (vm_get_register vm 'FLT) 1)
