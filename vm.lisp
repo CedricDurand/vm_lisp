@@ -216,7 +216,6 @@
   (setf compare (bit-and #*010  my-array)
   (if (not (equal compare #*000))
       (vm_set_register name 'SP lbl)))
-      (vm_set_register name 'SP lbl)))
 
 (defun exec_jne (vm lbl)
   (setf my-array (make-array 3 :element-type 'bit))
