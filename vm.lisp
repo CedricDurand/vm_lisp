@@ -1,12 +1,11 @@
 
 (defun vm_make (&optional (taille 5000) (name 'VM))
   	; Notre mémoire
- 	(setf (get name 'memory) (make-array taille))
+ 	(setf (get name 'memory) (make-array taille :initial-element ()))
   	; Nos 7 registres
    	(setf (get name 'R0) 0)
   	(setf (get name 'R1) 0)
 	(setf (get name 'R2) 0)
-  	(setf (get name 'FP) 0)
    	; registre qui pointe sur la prochaine instruction
 	(setf (get name 'PC) 0)
  	; registre qui pointe sur le bas de la pile
@@ -29,7 +28,6 @@
     (setf (get name 'R0) 0)
     (setf (get name 'R1) 0)
     (setf (get name 'R2) 0)
-    (setf (get name 'FP) 0)
     (setf (get name 'PC) 0)
     (setf (get name 'BP) 0)
     (setf (get name 'SP) 0)
@@ -265,7 +263,7 @@
 
 
 (defun existe_register (expression)
-  (member expression '(R0 R1 R2 FP PC BP SP FLT FEQ FGT )))
+  (member expression '(R0 R1 R2 PC BP SP FLT FEQ FGT )))
 
 (defun existe_jumpp (expression)
   (member expression '(jmp jsr jeq jneq jg jl jge jle)))
