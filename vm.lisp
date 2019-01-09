@@ -262,3 +262,10 @@
 )
 
 (defun vm_run ())
+
+
+(defun existe_register (expression)
+  (member expression '(R0 R1 R2 FP PC BP SP FLT FEQ FGT )))
+
+(defun existe_jumpp (expression)
+  (member expression '(jmp jsr jeq jneq jg jl jge jle)))
