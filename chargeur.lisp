@@ -12,11 +12,13 @@
      ((member (car exp) '(+ - * /)) (compi-op exp ))
      ((member (car exp) '(< > = <= >= )) (compi-compa exp ))
      ((equal_cas exp 'if) (compi-if exp ))
-     ((equal_cas exp 'defun) (compilation-defun arg  ))
-     (`(function ,(car exp)) (compilation-appel exp ))
+     ((equal_cas exp 'defun) (compi-defun arg  ))
+     (`(function ,(car exp)) (compi-appel exp ))
     )
   )
 )
+
+(defun compi-defun )
 
 (defun compi_compa (exp)
 	(let ((op (car exp))))
