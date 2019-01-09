@@ -1,9 +1,3 @@
-(defun code_to_asm (expr)
-	(cond (...)
-
-
-		  (t (//STOP la compilation))))
-
 
 (defun compilation (exp)
   (let ((arg (if (atom exp) () (cdr exp))))
@@ -12,13 +6,20 @@
      ((member (car exp) '(+ - * /)) (compi-op exp ))
      ((member (car exp) '(< > = <= >= )) (compi-compa exp ))
      ((equal_cas exp 'if) (compi-if exp ))
-     ((equal_cas exp 'defun) (compi-defun arg  ))
+     ((equal_cas exp 'defun) (compi-defune exp  ))
      (`(function ,(car exp)) (compi-appel exp ))
     )
   )
 )
 
-(defun compi-defun )
+(defun compi-defune (exp)
+	(append '((ENTRY))
+			`((@ ,(cadr exp))) ;;@ pour adresse
+			(compilation (cddr exp)) ;; argu mis dans la pire
+			'((RTN))
+			'((QUIT))
+	)
+)
 
 (defun compi_compa (exp)
 	(let ((op (car exp))))
