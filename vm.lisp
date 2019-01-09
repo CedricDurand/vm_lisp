@@ -271,7 +271,7 @@
         (JEQ (exec_jeq vm (cadr expr)))
         (JNE (exec_jne vm (cadr expr)))
         (NOP (exec_nop vm (cadr expr)))
-        (halt (exec_halt vm (cdr expr)))
+        (HALT (exec_halt vm (cdr expr)))
     )  
 )
 
