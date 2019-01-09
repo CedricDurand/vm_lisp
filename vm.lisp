@@ -41,7 +41,22 @@
 		(set_memory name posi () ))))
 
 (defun vm_load (vm liste_expression)
-  
+    (let ((exp liste_expression)
+	(inst (car liste_expression)))
+    	(loop while exp
+	  do
+	  ;(case (car inst)
+	    ;('@ (case-adr mv exp inst etiqLoc etiqLocNR))
+	    ;('VARG (case-varg mv exp inst))
+	    ;('JSR (case-saut mv exp inst))
+	    ;('FEntry (case-fonction mv exp inst))
+	    ;(otherwise (case-other mv exp inst etiqLoc etiqLocNR))
+	   ; )
+	      ;faire quelque chose avec 'memory, afin de mettre le code assembleur en mémoire que run executera
+	  do (setf exp (cdr exp))
+	  do (setf inst (car exp))
+	  )
+    )
 )
 
 (defun vm_load_file (vm file)
@@ -256,7 +271,7 @@
         (JEQ (exec_jeq vm (cadr expr)))
         (JNE (exec_jne vm (cadr expr)))
         (NOP (exec_nop vm (cadr expr)))
-        (halt (exec_halt vm (cdr expr)))
+        (HALT (exec_halt vm (cdr expr)))
     )  
 )
 
