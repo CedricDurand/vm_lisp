@@ -12,13 +12,27 @@
   )
 )
 
+
+(defun compi_litt(exp)
+	(if (numberp exp)
+		`((MOVE exp R0))
+		`((MOVE (@ exp) R0))
+	)
+)
+
+
+
 (defun compi-defune (exp)
 	(append '((ENTRY))
 			`((@ ,(cadr exp))) ;;@ pour adresse
-			(compilation (cddr exp)) ;; argu mis dans la pire
+			(compilation (cddr exp)) ;; argu mis dans la pile
 			'((RTN))
 			'((QUIT))
 	)
+)
+
+(defun compi-appel(exp)
+
 )
 
 (defun compi_compa (exp)
@@ -46,7 +60,6 @@
 		'((CMP R0 ))
 
 	)
-
 )
 
 (defun compi-op (exp)
@@ -65,10 +78,6 @@
 		  ('/ '((DIV R1 R0)))))      
     )
  )
-
-(defun compi_litt(exp)
-	'((MOVE (car exp) R0))
-)
 
 (defun equal_cas (exp inst)
   (eql (car exp) inst)
