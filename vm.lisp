@@ -6,7 +6,7 @@
    	(setf (get name 'R0) 0)
   	(setf (get name 'R1) 0)
 	(setf (get name 'R2) 0)
-   	; registre qui pointe sur la prochaine instruction
+   	; registre qui pointe sur la prochaine instruction (compteur ordinal)
 	(setf (get name 'PC) 0)
  	; registre qui pointe sur le bas de la pile
  	(setf (get name 'BP) 0)
@@ -91,6 +91,7 @@
 (defun exec_move (vm reg1 reg2)
   (vm_set_register vm reg2 (vm_get_register vm reg1))
 )
+
 
 (defun exec_load (vm adr reg)
   (vm_set_register vm reg (vm_get_memory vm adr))
@@ -266,4 +267,4 @@
   (member expression '(R0 R1 R2 PC BP SP FLT FEQ FGT )))
 
 (defun existe_jumpp (expression)
-  (member expression '(jmp jsr jeq jneq jg jl jge jle)))
+  (member expression '(JMP JSR JEQ JNE JGT JLT JGE JLE)))
