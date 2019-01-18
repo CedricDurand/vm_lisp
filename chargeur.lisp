@@ -6,7 +6,7 @@
      ;;((equal_cas exp 'if) (compi-if exp ))
 	;;equal_cas exp 'defun) (compi-defune exp  ))
     ;; (`(function ,(car exp)) (compi-fonction exp ))
-     ((atom (cdr exp)) (compi-litt (caar exp) ))
+     ;;((atom (cdr exp)) (compi-litt (caar exp) ))
     )
 )
 
@@ -82,7 +82,7 @@
 
 (defun compi-op (exp)
   (let ((operation (caar exp))(argu (caadr exp)))
-  (write argu)
+  (write (car exp))
   
 	;(append (compilation (car argu) )
 	;	`((PUSH :R0))
