@@ -4,10 +4,17 @@
      ((member (car exp) '(+ - * /)) (compi-op exp ))
      ((member (car exp) '(< > = <= >= )) (compi-compa exp ))
      ((equal_cas exp 'if) (compi-if (cdr exp) ))
-	;;((equal_cas exp 'defun) (compi-defune exp  ))
+	 ((equal_cas exp 'defun) (compi-defune (cdr exp)  ))
     ;;(`(function ,(car exp)) (compi-fonction exp ))
      ((atom (car exp)) (compi-litt (car exp) ))
     )
+)
+
+(defun compi-defune (exp)
+	(append `((@ ,(car exp))) ;;adresse de la function
+			(compilation (car (cddr exp))) ;; argu mis dans la pile
+			'((RTN))
+	)
 )
 
 (defun compi-if(exp)
@@ -96,14 +103,6 @@
 
 
 
-(defun compi-defune (exp)
-	(append '((ENTRY))
-			`((@ ,(cadr exp))) ;;@ pour adresse
-			(compilation (cddr exp)) ;; argu mis dans la pile
-			'((RTN))
-			'((QUIT))
-	)
-)
 
 
 
