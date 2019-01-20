@@ -1,15 +1,32 @@
 
 (defun compilation (exp)
     (cond
-     ((member (caar exp) '(+ - * /)) (compi-op exp ))
+     ((member (car exp) '(+ - * /)) (compi-op exp ))
      ;;((member (car exp) '(< > = <= >= )) (compi-compa exp ))
      ;;((equal_cas exp 'if) (compi-if exp ))
 	;;equal_cas exp 'defun) (compi-defune exp  ))
     ;; (`(function ,(car exp)) (compi-fonction exp ))
-     ;;((atom (cdr exp)) (compi-litt (caar exp) ))
+    ((atom (car exp)) (compi-litt (car exp) ))
     )
 )
 
+(defun compi-op (exp)
+  (let ((operation (car exp))(argu (cdr exp)))
+  (write (cadr argu))
+  
+	(append (compilation (list (car argu)) )
+		`((PUSH :R0))
+		(compilation (cdr argu))
+		`((PUSH :R0))
+		`((POP :R1))
+		`((POP :R0))
+		(case operation
+		  ('+ `((ADD :R1 :R0)))
+		  ('- `((SUB :R1 :R0)))
+		  ('* `((MULT :R1 :R0)))
+		  ('/ `((DIV :R1 :R0)))))     
+	) 
+ )
 
 (defun compi-fonction(exp)
 	(let ((nb_param (length (cdr exp)))))
@@ -80,23 +97,6 @@
 	)
 )
 
-(defun compi-op (exp)
-  (let ((operation (caar exp))(argu (caadr exp)))
-  (write (car exp))
-  
-	;(append (compilation (car argu) )
-	;	`((PUSH :R0))
-	;	(compilation (cadr argu))
-	;	`((PUSH :R0))
-	;	`((POP :R1))
-	;	`((POP :R0))
-	;	(case operation
-	;	  ('+ `((ADD :R1 :R0)))
-	;	  ('- `((SUB :R1 :R0)))
-	;	  ('* `((MULT :R1 :R0)))
-	;	  ('/ `((DIV :R1 :R0)))))     
-	) 
- )
 
 (defun equal_cas (exp inst)
   (eql (car exp) inst)
