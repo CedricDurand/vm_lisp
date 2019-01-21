@@ -1,5 +1,10 @@
+; Fonction a test 
+; '(defun fact (n) (if (<= n 1) (1) (* n (function fact (- n 1)))))
+; '(defun fibo (n) (if (< n 2) (n) (+ (function fibo (- n 1)) (function fibo (- n 2)))))
+;
+
 (defun compilation (exp)
-	;(write exp)
+
     (cond
      ((member (car exp) '(+ - * /)) (compi-op exp ))
      ((member (car exp) '(< > = <= >= )) (compi-compa exp ))
@@ -12,25 +17,24 @@
 
 
 (defun compi-fonction(exp)
-  	(let ((nb_param (length (car (cdr exp)))))
-		(write nb_param)
-    	 
-     
-     
+  	(let ((nb_param (length (cdr exp))))
+  		(write (cdr exp))
+    	 (append (compi-param-fonc (cdr exp))
+		 `((PUSH (CONST nb_param)))
+		 `((MOVE BP R1))
+		 `((MOVE SP BP))
+		 `((MOVE SP R2))
+		 `((SUB  (CONST nb_param) R2))
+	     `((SUB  (CONST 1) :R2))
+	     `((PUSH R2)) 
+		 `((PUSH R1))
+         `((JSR (@ ,(car exp))))       
+         )        
     )
-;	(append (compi-param-fonc (cdr exp))
-;		`((PUSH (CONST nb_param)))
-;		`((MOVE ))
-;		`((MOVE ))
-;		`((MOVE ))
-		
-		;;pas fini
-;	)
-
 )
 
 (defun compi-param-fonc (exp)
-	(if (atom exp)
+ 	(if (atom exp)
 		()
 		(append (compilation (car exp))
 				`((PUSH R0))
