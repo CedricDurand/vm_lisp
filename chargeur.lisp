@@ -5,10 +5,40 @@
      ((member (car exp) '(< > = <= >= )) (compi-compa exp ))
      ((equal_cas exp 'if) (compi-if (cdr exp) ))
 	 ((equal_cas exp 'defun) (compi-defune (cdr exp)  ))
-    ;;(`(function ,(car exp)) (compi-fonction exp ))
+     ((equal_cas exp 'function) (compi-fonction (cdr exp) ))
      ((atom (car exp)) (compi-litt (car exp) ))
     )
 )
+
+
+(defun compi-fonction(exp)
+  	(let ((nb_param (length (car (cdr exp)))))
+		(write nb_param)
+    	 
+     
+     
+    )
+;	(append (compi-param-fonc (cdr exp))
+;		`((PUSH (CONST nb_param)))
+;		`((MOVE ))
+;		`((MOVE ))
+;		`((MOVE ))
+		
+		;;pas fini
+;	)
+
+)
+
+(defun compi-param-fonc (exp)
+	(if (atom exp)
+		()
+		(append (compilation (car exp))
+				`((PUSH R0))
+				(compi-param-fonc (cdr exp)))
+		)
+
+)
+
 
 (defun compi-defune (exp)
 	(append `((@ ,(car exp))) ;;adresse de la function
@@ -71,28 +101,6 @@
 	) 
  )
 
-(defun compi-fonction(exp)
-	(let ((nb_param (length (cdr exp)))))
-	(append (compi-param-fonc (cdr exp))
-		`((PUSH (CONST nb_param)))
-		`((MOVE ))
-		`((MOVE ))
-		`((MOVE ))
-		
-		;;pas fini
-	)
-
-)
-
-(defun compi-param-fonc (exp)
-	(if (atom exp)
-		()
-		(append (compilation (car exp))
-				`((PUSH R0))
-				(compi-param-fonc (cdr exp)))
-		)
-
-)
 
 (defun compi-litt(exp)
 	(if (numberp  exp)

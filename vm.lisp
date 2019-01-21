@@ -5,11 +5,11 @@
   	; Nos 7 registres
    	(setf (get name 'R0) 0)
   	(setf (get name 'R1) 0)
-	(setf (get name 'R2) 0)
-   	; registre qui pointe sur la prochaine instruction (compteur ordinal)
-	(setf (get name 'PC) 0)
- 	; registre qui pointe sur le bas de la pile
- 	(setf (get name 'BP) 0)
+  	(setf (get name 'R2) 0)
+     	; registre qui pointe sur la prochaine instruction (compteur ordinal)
+  	(setf (get name 'PC) 0)
+   	; registre qui pointe sur le bas de la pile
+   	(setf (get name 'BP) 0)
   	; registre qui pointe sur le haut de la pile (case vide)
    	(setf (get name 'SP) 0) 
     ; Les 3 flags booléens
