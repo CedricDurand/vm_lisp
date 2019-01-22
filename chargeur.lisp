@@ -12,19 +12,19 @@
 	 ((equal_cas exp 'defun) (compi-defune (cdr exp)  ))
      ((equal_cas exp 'function) (compi-fonction (cdr exp) ))
      ((atom (car exp)) (compi-litt (car exp) ))
+     ((compi-fonction (cdar exp))) ;pour les fonctions dans les opérations
     )
 )
 
 
 (defun compi-fonction(exp)
   	(let ((nb_param (length (cdr exp))))
-  		(write (cdr exp))
     	 (append (compi-param-fonc (cdr exp))
-		 `((PUSH (CONST nb_param)))
+		 `((PUSH (CONST ,nb_param)))
 		 `((MOVE BP R1))
 		 `((MOVE SP BP))
 		 `((MOVE SP R2))
-		 `((SUB  (CONST nb_param) R2))
+		 `((SUB  (CONST ,nb_param) R2))
 	     `((SUB  (CONST 1) :R2))
 	     `((PUSH R2)) 
 		 `((PUSH R1))
