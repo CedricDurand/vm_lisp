@@ -1,4 +1,4 @@
-
+(require "chargeur.lisp")
 (defun vm_make (&optional (taille 5000) (name 'VM))
   	; Notre mémoire
  	(setf (get name 'memory) (make-array taille :initial-element ()))
@@ -40,7 +40,14 @@
       do
 		(set_memory name posi () ))))
 
-(defun vm_load (vm liste_expression)
+(defun vm_load (vm code)
+  (let ((liste_expression (compilation code)))
+    (vm_init_load vm liste_expression) 
+  )
+)
+
+(defun vm_init_load (vm liste_expression)
+
     (let ((exp liste_expression)
 	(inst (car liste_expression)))
     	(loop while exp
