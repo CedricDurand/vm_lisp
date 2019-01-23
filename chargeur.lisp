@@ -68,10 +68,22 @@
 (defun compi-compa (exp)
 	(let ((op (car exp))(else_ (gensym "else")))
 	(append 
-   
-   			(compilation (list (cadr exp)))
+		;(format t "~% argu 1er ~S~%" (cadr exp))
+  		;(format t "~% argu 2er ~S~%" (caddr exp))
+
+  			(if (atom (cadr exp)) ; si c'est 2 ou (+ 2 3)
+	         	(compilation  (list (cadr exp)))
+	         	(compilation  (cadr exp))
+        	)   
+
 			'((PUSH R0))
-			(compilation (list (caddr exp)))
+
+
+			(if (atom (caddr exp)) ; si c'est 2 ou (+ 2 3)
+	         	(compilation  (list (caddr exp)) )
+	         	(compilation  (caddr exp))
+	        )
+	   
 			'((PUSH R0))
 		    '((POP R0))
 		    '((POP R1))
@@ -96,18 +108,17 @@
   		;(format t "~% argu 1er ~S~%" (car argu))
   		;(format t "~% argu 2er ~S~%" (cdr argu))
 	(append 
-   		(if (atom (car argu))
+   		(if (atom (car argu)) ; si c'est 2 ou (+ 2 3)
          	(compilation (list (car argu)) )
          	(compilation  (car argu))
         )
 		`((PUSH R0))
   
-		(if (atom (cadr argu))
+		(if (atom (cadr argu)) ; si c'est 2 ou (+ 2 3)
          	(compilation  (cdr argu) )
          	(compilation  (cadr argu))
         )
 
-		;(compilation (cdr argu))
 		`((PUSH R0))
 		`((POP R1))
 		`((POP R0))
