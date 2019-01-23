@@ -19,7 +19,7 @@
     ; les etiquettes qui seront dans une hastable
     (setf (get name 'LABEL) (make-hash-table :size 0))
     ; pour l'arret 
-    (setf (get name 'RUN) nil)
+    (setf (get name 'RUN) 1)
 )
 
 
@@ -35,7 +35,7 @@
     (setf (get name 'FEQ) 0)
     (setf (get name 'FGT) 0)
     (setf (get name 'LABEL) (make-hash-table :size 0))
-    (setf (get name 'RUN) nil)
+    (setf (get name 'RUN) 1)
     (loop for posi from 0 to (- (length (get name 'memory)) 1)
       do
 		(set_memory name posi () ))))
@@ -271,7 +271,9 @@
 (defun exec_nop (vm))
 
 (defun exec_halt (vm)
-	(vm_set_etat vm nil))
+	(vm_set_etat vm nil)
+  (format t "~% HALT : ~S~%" (get vm 'RUN))
+ )
 
 
 ;changer les fonctions pour que ça corresponde 
@@ -296,7 +298,7 @@
         (JEQ (exec_jeq vm (cadr expr)))
         (JNE (exec_jne vm (cadr expr)))
         (NOP (exec_nop vm ))
-        (HALT (exec_halt vm ))
+        (HALT (exec_halt vm))
         ('@ (format t "Label défini ~%"))
         (otherwise (format t "Erreur : instruction inconnue ~%"))
     )  
