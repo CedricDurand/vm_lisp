@@ -68,6 +68,8 @@
     )
     ;(get vm 'memory)
     (get vm 'LABEL)
+    (maphash #'(lambda (clé val) (format t "~a => ~a~%" clé val)) (get vm 'LABEL))
+    (hash-table-count (get vm 'LABEL))
 )
 
 (defun register_function (vm exp)
@@ -128,7 +130,7 @@
   (format t "~% VAL hash : ~S~%"  val)
     (if (atom val)
         (setf (get vm reg) val)
-        (format t "~% LABEL hash : ~S~%" (getvaleur '(#:|else6253|) (get vm 'LABEL))) ;(setf (get vm 'PC) (gethash  val))
+        (format t "~% LABEL hash : ~S~%" (getvaleur 'else7055 (get vm 'LABEL))) ;(setf (get vm 'PC) (gethash  val))
     )
 )
 
