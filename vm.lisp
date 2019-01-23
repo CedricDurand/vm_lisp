@@ -66,8 +66,8 @@
 	  do (setf inst (car exp))
 	  )
     )
-    (write (get vm 'memory))
-    (get vm 'LABEL)
+    ;(write (get vm 'memory))
+    ;(get vm 'LABEL)
 )
 
 (defun register_function (vm exp)
@@ -117,7 +117,7 @@
 	)
 )
 (defun vm_set_register (vm reg val)
-(format t "~% SET REGISTRE :~S ~S~%" reg val)
+;(format t "~% SET REGISTRE :~S ~S~%" reg val)
   	(setf (get vm reg) val) 
 )
 
@@ -135,7 +135,7 @@
 
 
 (defun exec_load (vm adr reg)
-(format t "~% EXEC LOAD : ~S~%" adr)
+;(format t "~% EXEC LOAD : ~S~%" adr)
   (vm_set_register vm reg (vm_get_memory vm adr))
 )
 
@@ -149,7 +149,7 @@
 )
 
 (defun exec_pop (vm reg)
-(format t "~% POP ICI : ~S~%" (get vm 'SP))
+;(format t "~% POP ICI : ~S~%" (get vm 'SP))
   (exec_decr vm 'SP)
   (exec_load vm (get vm 'SP) reg)
 )
@@ -160,15 +160,15 @@
 )
 
 (defun exec_sub (vm reg1 reg2)  
-   (vm_set_register vm reg2 (- (vm_get_register vm reg1) (vm_get_register vm reg2))) 
+   (vm_set_register vm reg2 (- (vm_get_register vm reg2) (vm_get_register vm reg1))) 
 )
 
 (defun exec_mult (vm reg1 reg2)  
-   (vm_set_register vm reg2 (/ (vm_get_register vm reg1) (vm_get_register vm reg2))) 
+   (vm_set_register vm reg2 (* (vm_get_register vm reg1) (vm_get_register vm reg2))) 
 )
 
 (defun exec_div (vm reg1 reg2)
-   (vm_set_register vm reg2 (* (vm_get_register vm reg1) (vm_get_register vm reg2))) 
+   (vm_set_register vm reg2 (/ (vm_get_register vm reg2) (vm_get_register vm reg1))) 
 )
 
 (defun exec_decr (vm reg) 
@@ -279,12 +279,12 @@
 
 	(case (car expr)
        	(MOVE  (exec_move vm expr (caddr expr))) 
-    	(STORE (exec_store vm (cdr expr)))
-	    (LOAD (exec_load vm (cdr expr)))
-     	(ADD (exec_add vm (cdr expr)))
-      	(SUB (exec_sub vm (cdr expr)))
-        (MUL (exec_mult vm (cdr expr)))
-        (DIV (exec_div vm (cdr expr)))
+      	(STORE (exec_store vm (cdr expr)))
+  	    (LOAD (exec_load vm (cdr expr)))
+       	(ADD (exec_add vm (cadr expr) (caddr expr)))
+      	(SUB (exec_sub vm (cadr expr) (caddr expr)))
+        (MULT (exec_mult vm (cadr expr) (caddr expr)))
+        (DIV (exec_div vm (cadr expr) (caddr expr)))
         (INCR (exec_incr vm (cadr expr)))
         (DECR (exec_decr vm (cadr expr)))
         (PUSH (exec_push vm (cadr expr)))
@@ -307,21 +307,20 @@
 )
 
 (defun vm_run (vm)
-	(write (get vm 'memory))
+	;(write (get vm 'memory))
 	(setf (get vm 'PC) 0)
-	(loop while (get vm 'PC)
+	(loop while (and (get vm 'PC) (not(eq (get vm 'PC) (get vm 'SP))))
 		do(if (aref (get vm 'memory) (get vm 'PC))
 		(progn
-			(write (aref (get vm 'memory) (get vm 'PC)))
-			(format t "~% Registre RO ~S~%" (get vm 'R0))
-			(format t "~% Registre R1 ~S~%" (get vm 'R1))
+			;(format t "~% Registre RO ~S~%" (get vm 'R0))
+			;(format t "~% Registre R1 ~S~%" (get vm 'R1))
 			(vm_eval vm (aref (get vm 'memory) (get vm 'PC)))
 			(exec_incr vm 'PC)
 		)
 		(get vm 'LABEL)
 	  )
 	)
-	(get vm 'PC)
+	(get vm 'R0)
 	;(cond
 	;	((existe_register (car (cddr (aref (get vm 'memory) 2)))) (format t "LA bite en bois ~%") (format t "LA bite en bois ~%"))
 	;	(t 	(format t "Turlututu chapo pointu ~%"))	
@@ -330,7 +329,7 @@
 
 
 (defun existe_constante (expe)
-(format t "~% APPELL !!!~%")
+;(format t "~% APPELL !!!~%")
 	(if (eq (car expe) 'CONST) 1 nil)
 )
 (defun existe_variable (expe)
