@@ -1,5 +1,5 @@
 (require "chargeur.lisp")
-(defun vm_make (&optional (taille 5000) (name 'VM))
+(defun vm_make (&optional (taille 500) (name 'VM))
   	; Notre mémoire
  	(setf (get name 'memory) (make-array taille :initial-element ()))
   	; Nos 7 registres
@@ -266,7 +266,7 @@
 ;changer les fonctions pour que ça corresponde 
 (defun vm_eval (vm expr)
 	(case (car expr)
-       	(MOVE  (exec_move vm (cdr expr))) 
+       	(MOVE  (exec_move vm expr (cdr expr))) 
     	(STORE (exec_store vm (cdr expr)))
 	    (LOAD (exec_load vm (cdr expr)))
      	(ADD (exec_add vm (cdr expr)))
@@ -289,12 +289,32 @@
         (JNE (exec_jne vm (cadr expr)))
         (NOP (exec_nop vm (cadr expr)))
         (HALT (exec_halt vm (cdr expr)))
+        ('@ (format t "Label défini ~%"))
+        (otherwise (format t "Erreur : instruction inconnue ~%"))
     )  
 )
 
-(defun vm_run ())
+(defun vm_run (vm)
+	(loop while (get vm 'PC)
+		do(if (aref (get vm 'memory) (get vm 'PC))
+		(progn
+			(write (aref (get vm 'memory) (get vm 'PC)))
+			(vm_eval vm (aref (get vm 'memory) (get vm 'PC)))
+			(exec_incr vm 'PC)
+		)
+	  )
+	)
+	(get vm 'PC)
+	;(cond
+	;	((existe_register (car (cddr (aref (get vm 'memory) 2)))) (format t "LA bite en bois ~%") (format t "LA bite en bois ~%"))
+	;	(t 	(format t "Turlututu chapo pointu ~%"))	
+	;)
+)
 
 
+(defun existe_constante (exp)
+	(if (eq (car exp) 'CONST) 1 (nil))
+)
 (defun existe_register (expression)
   (member expression '(R0 R1 R2 PC BP SP FLT FEQ FGT )))
 
