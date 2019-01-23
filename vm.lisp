@@ -104,11 +104,20 @@
 
 
 ;voir ici si on doit faire une vérification
-(defun vm_get_register (vm reg)
-	(get vm reg) 
+;(defun vm_get_register (vm reg)
+;	(get vm reg) 
+;)
+(defun vm_get_register (vm adr)
+	(cond
+		((not (listp adr)) (get vm adr))
+		((existe_constante (cadr adr)) (cadadr adr))
+		((existe_variable (cadr adr)) (cadr adr))
+		((existe_adresse (cadr adr)) (cadr adr))
+		;((get vm adr))
+	)
 )
-
 (defun vm_set_register (vm reg val)
+(format t "~% SET REGISTRE :~S ~S~%" reg val)
   	(setf (get vm reg) val) 
 )
 
@@ -126,6 +135,7 @@
 
 
 (defun exec_load (vm adr reg)
+(format t "~% EXEC LOAD : ~S~%" adr)
   (vm_set_register vm reg (vm_get_memory vm adr))
 )
 
@@ -134,13 +144,14 @@
 )
 
 (defun exec_push (vm reg)
-  (exec_store vm reg (- (vm_get_memory vm (get vm 'SP)) 1 ))
-  (vm_set_memory vm (- (get vm 'SP) 1))
+  (exec_store vm reg (get vm 'SP))
+  (exec_incr vm 'SP)
 )
 
 (defun exec_pop (vm reg)
-  (exec_load vm (vm_get_memory vm (get vm 'SP)) reg)
-  (vm_set_memory vm (+ (get vm 'SP) 1))
+(format t "~% POP ICI : ~S~%" (get vm 'SP))
+  (exec_decr vm 'SP)
+  (exec_load vm (get vm 'SP) reg)
 )
 
 ; reg 1 ici peut être une valeur faire vérification
@@ -164,7 +175,7 @@
    (vm_set_register vm reg (- (vm_get_register vm reg) 1))  
 )
 
-(defun exec_incr (vm reg)  
+(defun exec_incr (vm reg) 
    (vm_set_register vm reg (+ (vm_get_register vm reg) 1)) 
 )
 
@@ -265,8 +276,9 @@
 
 ;changer les fonctions pour que ça corresponde 
 (defun vm_eval (vm expr)
+
 	(case (car expr)
-       	(MOVE  (exec_move vm expr (cdr expr))) 
+       	(MOVE  (exec_move vm expr (caddr expr))) 
     	(STORE (exec_store vm (cdr expr)))
 	    (LOAD (exec_load vm (cdr expr)))
      	(ADD (exec_add vm (cdr expr)))
@@ -295,13 +307,18 @@
 )
 
 (defun vm_run (vm)
+	(write (get vm 'memory))
+	(setf (get vm 'PC) 0)
 	(loop while (get vm 'PC)
 		do(if (aref (get vm 'memory) (get vm 'PC))
 		(progn
 			(write (aref (get vm 'memory) (get vm 'PC)))
+			(format t "~% Registre RO ~S~%" (get vm 'R0))
+			(format t "~% Registre R1 ~S~%" (get vm 'R1))
 			(vm_eval vm (aref (get vm 'memory) (get vm 'PC)))
 			(exec_incr vm 'PC)
 		)
+		(get vm 'LABEL)
 	  )
 	)
 	(get vm 'PC)
@@ -312,8 +329,15 @@
 )
 
 
-(defun existe_constante (exp)
-	(if (eq (car exp) 'CONST) 1 (nil))
+(defun existe_constante (expe)
+(format t "~% APPELL !!!~%")
+	(if (eq (car expe) 'CONST) 1 nil)
+)
+(defun existe_variable (expe)
+	(if (eq (car expe) 'REF) 1 nil)
+)
+(defun existe_adresse (exp)
+	(if (eq (car exp) '@) 1 nil)
 )
 (defun existe_register (expression)
   (member expression '(R0 R1 R2 PC BP SP FLT FEQ FGT )))
