@@ -66,7 +66,7 @@
 	  do (setf inst (car exp))
 	  )
     )
-    (get vm 'memory)
+    ;(get vm 'memory)
     (get vm 'LABEL)
 )
 
@@ -116,9 +116,20 @@
 		;((get vm adr))
 	)
 )
+
+(defun getvaleur (clé table-hach)
+   (multiple-value-bind (valeur present) (gethash clé table-hach)
+     (if present
+  (format nil "La valeur ~a est présente dans la table de hachage." valeur)
+  (format nil "La valeur ~a est rendue car la clé n'est pas dans la table de hachage." valeur)))
+)
+
 (defun vm_set_register (vm reg val)
-;(format t "~% SET REGISTRE :~S ~S~%" reg val)
-  	(setf (get vm reg) val) 
+  (format t "~% VAL hash : ~S~%"  val)
+    (if (atom val)
+        (setf (get vm reg) val)
+        (format t "~% LABEL hash : ~S~%" (getvaleur '(#:|else6253|) (get vm 'LABEL))) ;(setf (get vm 'PC) (gethash  val))
+    )
 )
 
 (defun vm_get_memory (vm adr)
@@ -197,14 +208,6 @@
   	(exec_jmp vm 'R0)	  
 )
 
-;(defun exec_cmp (vm reg1 reg2) ;à faire
-;  	(let ((var1 (vm_get_register vm reg1)) (var2 (vm_get_register vm reg2)))
-;		(cond
-;	   		((= var1 var2) (vm_set_register vm 'FEQ 1) (vm_set_register vm 'FGT 0) (vm_set_register vm 'FLT 0))
-;	     	((> var1 var2) (vm_set_register vm 'FGT 1) (vm_set_register vm 'FEQ 0) (vm_set_register vm 'FLT 0))
-;	      	((< var1 var2) (vm_set_register vm 'FLT 1) (vm_set_register vm 'FEQ 0) (vm_set_register vm 'FGT 0))   
-;	   	))
-;)
 (defun exec_cmp (vm reg1 reg2)
   (let ((r1 (vm_get_register vm reg1)) (r2 (vm_get_register vm reg1)))
   (cond
@@ -221,7 +224,7 @@
   (setf (aref my-array 2) (vm_get_register vm 'FGT))
   (setf (compare (bit-and #*100  my-array))
 	(if (not (equal compare #*000))
-    	(vm_set_register name 'SP lbl))))
+    	(vm_set_register vm 'SP lbl))))
 
 (defun exec_jle (vm lbl)
   (setf my-array (make-array 3 :element-type 'bit))
@@ -230,7 +233,7 @@
   (setf (aref my-array 2) (vm_get_register vm 'FGT))
   (setf (compare (bit-and #*110  my-array))
   (if (not (equal compare #*000))
-      (vm_set_register name 'SP lbl))))
+      (vm_set_register vm 'SP lbl))))
 
 (defun exec_jgt (vm lbl)
   (setf my-array (make-array 3 :element-type 'bit))
@@ -239,7 +242,7 @@
   (setf (aref my-array 2) (vm_get_register vm 'FGT))
   (setf (compare (bit-and #*001  my-array))
   (if (not (equal compare #*000))
-      (vm_set_register name 'SP lbl))))
+      (vm_set_register vm 'SP lbl))))
 
 (defun exec_jge (vm lbl)
   (setf my-array (make-array 3 :element-type 'bit))
@@ -248,16 +251,16 @@
   (setf (aref my-array 2) (vm_get_register vm 'FGT))
   (setf (compare (bit-and #*011  my-array))
   (if (not (equal compare #*000))
-      (vm_set_register name 'SP lbl))))
+      (vm_set_register vm 'SP lbl))))
 
 (defun exec_jeq (vm lbl)
   (setf my-array (make-array 3 :element-type 'bit))
   (setf (aref my-array 0) (vm_get_register vm 'FLT))
   (setf (aref my-array 1) (vm_get_register vm 'FEQ))
   (setf (aref my-array 2) (vm_get_register vm 'FGT))
-  (setf (compare (bit-and #*010  my-array))
+  (let ((compare (bit-and #*010  my-array)))
   (if (not (equal compare #*000))
-      (vm_set_register name 'SP lbl))))
+      (vm_set_register vm 'SP lbl))))
 
 (defun exec_jne (vm lbl)
   (setf my-array (make-array 3 :element-type 'bit))
@@ -266,7 +269,7 @@
   (setf (aref my-array 2) (vm_get_register vm 'FGT))
   (setf (compare (bit-and #*101  my-array))
   (if (not (equal compare #*000))
-      (vm_set_register name 'SP lbl))))
+      (vm_set_register vm 'SP lbl))))
 
 (defun exec_nop (vm))
 
@@ -312,10 +315,11 @@
 		(progn
 			;(format t "~% Registre RO ~S~%" (get vm 'R0))
 			;(format t "~% Registre R1 ~S~%" (get vm 'R1))
+      (format t "~% en cours  ~S~%" (aref (get vm 'memory) (get vm 'PC)))
 			(vm_eval vm (aref (get vm 'memory) (get vm 'PC)))
 			(exec_incr vm 'PC)
 		)
-		(get vm 'LABEL)
+		;(get vm 'LABEL)
 	  )
 	)
 	(get vm 'R0)
