@@ -4,7 +4,7 @@
 ;
 
 (defun compilation (exp)
-
+	;(format t "~% ICI ~S~%" exp)
     (cond
      ((member (car exp) '(+ - * /)) (compi-op exp ))
      ((member (car exp) '(< > = <= >= )) (compi-compa exp ))
@@ -67,7 +67,9 @@
 
 (defun compi-compa (exp)
 	(let ((op (car exp))(else_ (gensym "else")))
-	(append (compilation (list (cadr exp)))
+	(append 
+   
+   			(compilation (list (cadr exp)))
 			'((PUSH R0))
 			(compilation (list (caddr exp)))
 			'((PUSH R0))
@@ -91,9 +93,21 @@
 
 (defun compi-op (exp)
   (let ((operation (car exp))(argu (cdr exp)))
-	(append (compilation (list (car argu)) )
+  		;(format t "~% argu 1er ~S~%" (car argu))
+  		;(format t "~% argu 2er ~S~%" (cdr argu))
+	(append 
+   		(if (atom (car argu))
+         	(compilation (list (car argu)) )
+         	(compilation  (car argu))
+        )
 		`((PUSH R0))
-		(compilation (cdr argu))
+  
+		(if (atom (cadr argu))
+         	(compilation  (cdr argu) )
+         	(compilation  (cadr argu))
+        )
+
+		;(compilation (cdr argu))
 		`((PUSH R0))
 		`((POP R1))
 		`((POP R0))
