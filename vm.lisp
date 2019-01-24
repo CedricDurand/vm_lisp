@@ -73,7 +73,7 @@
 )
 
 (defun register_function (vm exp)
-	(setf (gethash (cdr exp) (get vm 'LABEL)) (get vm 'SP))
+	(setf (gethash (cadr exp) (get vm 'LABEL)) (get vm 'SP))
 	(setf (aref (get vm 'memory) (get vm 'SP)) exp)
 	(exec_incr vm 'SP)	
 )
@@ -119,12 +119,15 @@
 	)
 )
 
-(defun getvaleur (clé table-hach)
-   (multiple-value-bind (valeur present) (gethash clé table-hach)
-     (if present
-  (format nil "La valeur ~a est présente dans la table de hachage." valeur)
-  (format nil "La valeur ~a est rendue car la clé n'est pas dans la table de hachage." valeur)))
+(defun get-hash (keys table)
+  (loop for key being the hash-keys of table collect key)
+  ;(gethash key table)  
 )
+
+(defun hash-keys (hash-table clef)
+  (maphash #'(lambda (clee val) (format t "~a => ~a~%" clee val)(if (eq clef clee) val nil)) hash-table)
+)
+  ;(loop for key being the hash-keys of hash-table collect key))
 
 (defun vm_set_register (vm reg val)
   (format t "~% VAL hash : ~S~%"  val)
