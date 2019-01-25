@@ -18,23 +18,13 @@
 
 
 (defun compi-fonction(exp)
-  	(let ((nb_param (length (cdr exp))))
     	 (append (compi-param-fonc (cdr exp))
-		 `((PUSH (CONST ,nb_param)))
-		 `((MOVE BP R1))
-		 `((MOVE SP BP))
-		 `((MOVE SP R2))
-		 `((SUB  (CONST ,nb_param) R2))
-	     `((SUB  (CONST 1) :R2))
-	     `((PUSH R2)) 
-		 `((PUSH R1))
          `((JSR (@ ,(car exp))))       
          )        
-    )
 )
 
 (defun compi-param-fonc (exp)
- 	(if (atom exp)
+ 	(if (null (car exp))
 		()
 		(append (compilation (car exp))
 				`((PUSH R0))
@@ -54,7 +44,7 @@
 (defun compi-if(exp)
 	( let ((sinon (gensym "sinon"))(fin (gensym "fin")))
 	(append (compilation (car exp))
-		'((CMP R2 (CONST 0))) ;; si ça n'a pas jump dans la compa
+		'((CMP R1 (CONST 0))) ;; si ça n'a pas jump dans la compa
 	    `((JEQ (@ ,sinon)))
 		(compilation (cadr exp))
 		`((JMP (@ ,fin)))
@@ -88,7 +78,7 @@
 		    '((POP R0))
 		    '((POP R1))
 		    '((CMP R1 R0))
-		    '((MOVE (CONST 1) R2)) ;; on met à T pour la future comparaison dans le if
+		    '((MOVE (CONST 1) R1)) ;; on met à T pour la future comparaison dans le if
 		     (case op
 		    	('= `((JEQ (@ ,else_))))
 		    	('< `((JLT (@ ,else_))))
@@ -97,7 +87,7 @@
 		    	('>= `((JGE (@ ,else_))))
 		    	('/= `((JNE (@ ,else_))))
 		    )
-		    '((MOVE (CONST 0) R2));;si ça n'a pas jump (voir le compi-if)
+		    '((MOVE (CONST 0) R1));;si ça n'a pas jump (voir le compi-if)
 		    `((@ ,else_))
 	)
 	)

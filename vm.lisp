@@ -47,7 +47,7 @@
 )
 
 (defun vm_init_load (vm liste_expression)
-
+	(setf (get vm 'PC) (get vm 'SP))
     (let ((exp liste_expression)
 	(inst (car liste_expression)))
     	(loop while exp
@@ -63,6 +63,8 @@
 	  )
     )
     (get vm 'memory)
+
+    ;(write (get vm 'PC))
     ;(maphash #'(lambda (clé val) (format t "~a => ~a~%" clé val)) (get vm 'LABEL))
 )
 
@@ -144,14 +146,18 @@
 )
 
 (defun exec_push (vm reg)
+(format t "~% PUSH DE : ~S~%" reg)	
   (exec_store vm reg (get vm 'SP))
   (exec_incr vm 'SP)
+
+   (format t "~% PUSH VALEUR ICI : ~S~%" (get vm reg))
 )
 
 (defun exec_pop (vm reg)
-;(format t "~% POP ICI : ~S~%" (get vm 'SP))
+ (format t "~% POP ICI : ~S~%" reg)
   (exec_decr vm 'SP)
   (exec_load vm (get vm 'SP) reg)
+   (format t "~% POP ICI : ~S~%" (get vm reg))
 )
 
 ; reg 1 ici peut être une valeur faire vérification
@@ -186,15 +192,15 @@
 	(vm_set_register vm 'PC lbl)
 )
 
-(defun exec_jsr (vm lbl)  
-	(exec_push vm (exec_incr 'PC))
+(defun exec_jsr (vm lbl) 
+	(vm_set_register vm 'R2 (get 'vm 'PC))
+	(exec_push vm 'R2)
  	(exec_jmp vm lbl)
 )
 
-(defun exec_rtn (vm) 
-	(exec_load vm (get vm 'SP) 'R0)
- 	(exec_decr vm 'SP)
-  	(exec_jmp vm (get vm 'R0))	  
+(defun exec_rtn (vm)
+	(exec_pop vm 'R2)
+  	(exec_jmp vm (get vm 'R2))
 )
 
 (defun exec_cmp (vm reg1 reg2)
@@ -297,25 +303,22 @@
 )
 
 (defun vm_run (vm)
-	;(write (get vm 'memory))
-	(setf (get vm 'PC) 0)
-	(loop while (and (get vm 'PC) (not(eq (get vm 'PC) (get vm 'SP))))
+	(loop while (and (get vm 'PC) (< (get vm 'PC) (get vm 'SP)))
 		do(if (aref (get vm 'memory) (get vm 'PC))
 		(progn
-			;(format t "~% Registre RO ~S~%" (get vm 'R0))
-			;(format t "~% Registre R1 ~S~%" (get vm 'R1))
-      (format t "~% en cours  ~S~%" (aref (get vm 'memory) (get vm 'PC)))
+      		(format t "~% en cours  ~S~%" (aref (get vm 'memory) (get vm 'PC)))
+			(format t "~% Registre PC ~S~%" (get vm 'PC))
+			(format t "~% Registre RO ~S~%" (get vm 'R0))
+			(format t "~% Registre R1 ~S~%" (get vm 'R1))
 			(vm_eval vm (aref (get vm 'memory) (get vm 'PC)))
 			(exec_incr vm 'PC)
 		)
 		;(get vm 'LABEL)
 	  )
 	)
+	(format t "~% Registre PC fin ~S~%" (get vm 'PC))
+	(format t "~% Registre SP fin ~S~%" (get vm 'SP))
 	(get vm 'R0)
-	;(cond
-	;	((existe_register (car (cddr (aref (get vm 'memory) 2)))) (format t "LA bite en bois ~%") (format t "LA bite en bois ~%"))
-	;	(t 	(format t "Turlututu chapo pointu ~%"))	
-	;)
 )
 
 
