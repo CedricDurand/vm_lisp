@@ -42,7 +42,7 @@
 
 (defun vm_load (vm code)
   (let ((liste_expression (compilation code)))
-    (vm_init_load vm liste_expression) 
+  	(vm_init_load vm liste_expression) 
   )
 )
 
@@ -52,6 +52,7 @@
 	(inst (car liste_expression)))
     	(loop while exp
     	do
+		;(format t "~% liste : ~S~%" exp)
 	  (case (car inst)
 	    ('@ (register_function vm inst))
 	   )
@@ -67,8 +68,6 @@
 
 (defun register_function (vm exp)
 	(setf (gethash (symbol-name (cadr exp)) (get vm 'LABEL)) (get vm 'SP))
-	(setf (aref (get vm 'memory) (get vm 'SP)) exp)
-	(exec_incr vm 'SP)	
 )
 
 (defun vm_load_file (vm file)
@@ -195,13 +194,11 @@
 (defun exec_rtn (vm) 
 	(exec_load vm (get vm 'SP) 'R0)
  	(exec_decr vm 'SP)
-  	(exec_jmp vm 'R0)	  
+  	(exec_jmp vm (get vm 'R0))	  
 )
 
 (defun exec_cmp (vm reg1 reg2)
   (let ((r1 (vm_get_register vm reg1)) (r2 (vm_get_register vm reg2)))
-  (format t "~% R0 : ~S~%" r1)
-  (format t "~% R1 : ~S~%" r2)
   (cond
     ((eql r1 r2) (vm_set_register vm 'FEQ 1) (vm_set_register vm 'FLT 0) (vm_set_register vm 'FGT 0))
     ((> r1 r2) (vm_set_register vm 'FGT 1) (vm_set_register vm 'FLT 0) (vm_set_register vm 'FEQ 0))
@@ -293,7 +290,6 @@
         (JEQ (exec_jeq vm (cadr expr)))
         (JNE (exec_jne vm (cadr expr)))
         (NOP (exec_nop vm ))
-        (HALT (exec_halt vm))
         ('@ ;(format t "Label défini ~%")
             )
         (otherwise (format t "Erreur : instruction inconnue ~%"))
