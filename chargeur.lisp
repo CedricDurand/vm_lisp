@@ -90,12 +90,12 @@
 		    '((CMP R1 R0))
 		    '((MOVE (CONST T) R2)) ;; on met à T pour la future comparaison dans le if
 		     (case op
-		    	('= `((JEQ (@,else_))))
-		    	('< `((JLT (@,else_))))
-		    	('> `((JGT (@,else_))))
-		    	('<= `((JLE (@,else_))))
-		    	('>= `((JGE (@,else_))))
-		    	('/= `((JNE (@,else_))))
+		    	('= `((JEQ (@ ,else_))))
+		    	('< `((JLT (@ ,else_))))
+		    	('> `((JGT (@ ,else_))))
+		    	('<= `((JLE (@ ,else_))))
+		    	('>= `((JGE (@ ,else_))))
+		    	('/= `((JNE (@ ,else_))))
 		    )
 		    '((MOVE (CONST nil) R2));;si ça n'a pas jump (voir le compi-if)
 		    `((@ ,else_))

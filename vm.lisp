@@ -17,7 +17,7 @@
     (setf (get name 'FEQ) 0)
     (setf (get name 'FGT) 0)
     ; les etiquettes qui seront dans une hastable
-    (setf (get name 'LABEL) (make-hash-table :size 0))
+    (setf (get name 'LABEL) (make-hash-table :size 0 :test 'equalp))
     ; pour l'arret 
     (setf (get name 'RUN) 1)
 )
@@ -54,26 +54,19 @@
     	do
 	  (case (car inst)
 	    ('@ (register_function vm inst))
-	    ;('VARG (case-varg mv exp inst))
-	    ;('JSR (case-saut mv exp inst))
-	    ;('FEntry (case-fonction mv exp inst))
-	    ;(otherwise (format t "Instruction : ~S~%" inst))
-	    )
-	      ;faire quelque chose avec 'memory, afin de mettre le code assembleur en mémoire que run executera
+	   )
 	  do (setf (aref (get vm 'memory) (get vm 'SP)) inst)
 	  do (exec_incr vm 'SP)
 	  do (setf exp (cdr exp))
 	  do (setf inst (car exp))
 	  )
     )
-    ;(get vm 'memory)
-    (get vm 'LABEL)
-    (maphash #'(lambda (clé val) (format t "~a => ~a~%" clé val)) (get vm 'LABEL))
-    (hash-table-count (get vm 'LABEL))
+    (get vm 'memory)
+    ;(maphash #'(lambda (clé val) (format t "~a => ~a~%" clé val)) (get vm 'LABEL))
 )
 
 (defun register_function (vm exp)
-	(setf (gethash (cadr exp) (get vm 'LABEL)) (get vm 'SP))
+	(setf (gethash (symbol-name (cadr exp)) (get vm 'LABEL)) (get vm 'SP))
 	(setf (aref (get vm 'memory) (get vm 'SP)) exp)
 	(exec_incr vm 'SP)	
 )
@@ -119,23 +112,18 @@
 	)
 )
 
-(defun get-hash (keys table)
-  (loop for key being the hash-keys of table collect key)
-  ;(gethash key table)  
+(defun get-hash (key)
+  (gethash key (get 'vm 'LABEL))  
 )
-
-(defun hash-keys (hash-table clef)
-  (gethash clef hash-table)
-  ;(maphash #'(lambda (clee val) (format t "~a => ~a~%" clee val)(if (eq clef clee) val nil)) hash-table)
-)
-  ;(loop for key being the hash-keys of hash-table collect key))
 
 (defun vm_set_register (vm reg val)
-  (format t "~% VAL hash : ~S~%"  val)
+  ;(format t "~% VAL hash : ~S~%"  val)
     (if (atom val)
         (setf (get vm reg) val)
-        (format t "~% LABEL hash : ~S~%" (getvaleur 'else7055 (get vm 'LABEL))) ;(setf (get vm 'PC) (gethash  val))
+        ;(format t "~% LABEL hash : ~S~%" (getvaleur 'else7055 (get vm 'LABEL))) 
+        (setf (get vm reg) (get-hash (symbol-name (cadr val))))
     )
+    ;(format t "~% PC hash : ~S~%"  (get vm 'PC))
 )
 
 (defun vm_get_memory (vm adr)
@@ -230,7 +218,7 @@
   (setf (aref my-array 2) (vm_get_register vm 'FGT))
   (setf (compare (bit-and #*100  my-array))
 	(if (not (equal compare #*000))
-    	(vm_set_register vm 'SP lbl))))
+    	(vm_set_register vm 'PC lbl))))
 
 (defun exec_jle (vm lbl)
   (setf my-array (make-array 3 :element-type 'bit))
@@ -239,7 +227,7 @@
   (setf (aref my-array 2) (vm_get_register vm 'FGT))
   (setf (compare (bit-and #*110  my-array))
   (if (not (equal compare #*000))
-      (vm_set_register vm 'SP lbl))))
+      (vm_set_register vm 'PC lbl))))
 
 (defun exec_jgt (vm lbl)
   (setf my-array (make-array 3 :element-type 'bit))
@@ -248,7 +236,7 @@
   (setf (aref my-array 2) (vm_get_register vm 'FGT))
   (setf (compare (bit-and #*001  my-array))
   (if (not (equal compare #*000))
-      (vm_set_register vm 'SP lbl))))
+      (vm_set_register vm 'PC lbl))))
 
 (defun exec_jge (vm lbl)
   (setf my-array (make-array 3 :element-type 'bit))
@@ -257,7 +245,7 @@
   (setf (aref my-array 2) (vm_get_register vm 'FGT))
   (setf (compare (bit-and #*011  my-array))
   (if (not (equal compare #*000))
-      (vm_set_register vm 'SP lbl))))
+      (vm_set_register vm 'PC lbl))))
 
 (defun exec_jeq (vm lbl)
   (setf my-array (make-array 3 :element-type 'bit))
@@ -266,7 +254,7 @@
   (setf (aref my-array 2) (vm_get_register vm 'FGT))
   (let ((compare (bit-and #*010  my-array)))
   (if (not (equal compare #*000))
-      (vm_set_register vm 'SP lbl))))
+      (vm_set_register vm 'PC lbl))))
 
 (defun exec_jne (vm lbl)
   (setf my-array (make-array 3 :element-type 'bit))
@@ -275,13 +263,13 @@
   (setf (aref my-array 2) (vm_get_register vm 'FGT))
   (setf (compare (bit-and #*101  my-array))
   (if (not (equal compare #*000))
-      (vm_set_register vm 'SP lbl))))
+      (vm_set_register vm 'PC lbl))))
 
 (defun exec_nop (vm))
 
 (defun exec_halt (vm)
 	(vm_set_etat vm nil)
-  (format t "~% HALT : ~S~%" (get vm 'RUN))
+  ;(format t "~% HALT : ~S~%" (get vm 'RUN))
  )
 
 
@@ -308,7 +296,8 @@
         (JNE (exec_jne vm (cadr expr)))
         (NOP (exec_nop vm ))
         (HALT (exec_halt vm))
-        ('@ (format t "Label défini ~%"))
+        ('@ ;(format t "Label défini ~%")
+            )
         (otherwise (format t "Erreur : instruction inconnue ~%"))
     )  
 )
@@ -321,7 +310,7 @@
 		(progn
 			;(format t "~% Registre RO ~S~%" (get vm 'R0))
 			;(format t "~% Registre R1 ~S~%" (get vm 'R1))
-      (format t "~% en cours  ~S~%" (aref (get vm 'memory) (get vm 'PC)))
+      ;(format t "~% en cours  ~S~%" (aref (get vm 'memory) (get vm 'PC)))
 			(vm_eval vm (aref (get vm 'memory) (get vm 'PC)))
 			(exec_incr vm 'PC)
 		)
