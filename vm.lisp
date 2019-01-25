@@ -125,7 +125,8 @@
 )
 
 (defun hash-keys (hash-table clef)
-  (maphash #'(lambda (clee val) (format t "~a => ~a~%" clee val)(if (eq clef clee) val nil)) hash-table)
+  (gethash clef hash-table)
+  ;(maphash #'(lambda (clee val) (format t "~a => ~a~%" clee val)(if (eq clef clee) val nil)) hash-table)
 )
   ;(loop for key being the hash-keys of hash-table collect key))
 
