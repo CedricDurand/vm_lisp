@@ -98,17 +98,13 @@
 	(get vm 'RUN))
 
 
-;voir ici si on doit faire une vérification
-;(defun vm_get_register (vm reg)
-;	(get vm reg) 
-;)
+
 (defun vm_get_register (vm adr)
 	(cond
 		((not (listp adr)) (get vm adr))
     ((existe_constante adr) (cadr adr))
 		((existe_variable  adr) (cadr adr))
 		((existe_adresse  adr) (cadr adr))
-		;((get vm adr))
 	)
 )
 
@@ -204,6 +200,8 @@
 
 (defun exec_cmp (vm reg1 reg2)
   (let ((r1 (vm_get_register vm reg1)) (r2 (vm_get_register vm reg2)))
+  (format t "~% R0 : ~S~%" r1)
+  (format t "~% R1 : ~S~%" r2)
   (cond
     ((eql r1 r2) (vm_set_register vm 'FEQ 1) (vm_set_register vm 'FLT 0) (vm_set_register vm 'FGT 0))
     ((> r1 r2) (vm_set_register vm 'FGT 1) (vm_set_register vm 'FLT 0) (vm_set_register vm 'FEQ 0))
@@ -253,7 +251,7 @@
   (setf (aref my-array 1) (vm_get_register vm 'FEQ))
   (setf (aref my-array 2) (vm_get_register vm 'FGT))
   (setf compare (bit-and #*010  my-array))
-  (if (not (equal comp #*000))
+  (if (not (equal compare #*000))
       (vm_set_register vm 'PC lbl)))
 
 (defun exec_jne (vm lbl)
@@ -326,7 +324,6 @@
 
 
 (defun existe_constante (expe)
- (format t "~% Constante ~S~%" expe)
 	(if (eq (car expe) 'CONST) 1 nil)
 )
 (defun existe_variable (expe)
