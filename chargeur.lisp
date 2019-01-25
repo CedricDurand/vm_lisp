@@ -54,7 +54,7 @@
 (defun compi-if(exp)
 	( let ((sinon (gensym "sinon"))(fin (gensym "fin")))
 	(append (compilation (car exp))
-		'((CMP R2 (CONST nil))) ;; si ça n'a pas jump dans la compa
+		'((CMP R2 (CONST 0))) ;; si ça n'a pas jump dans la compa
 	    `((JEQ (@ ,sinon)))
 		(compilation (cadr exp))
 		`((JMP (@ ,fin)))
@@ -88,7 +88,7 @@
 		    '((POP R0))
 		    '((POP R1))
 		    '((CMP R1 R0))
-		    '((MOVE (CONST T) R2)) ;; on met à T pour la future comparaison dans le if
+		    '((MOVE (CONST 1) R2)) ;; on met à T pour la future comparaison dans le if
 		     (case op
 		    	('= `((JEQ (@ ,else_))))
 		    	('< `((JLT (@ ,else_))))
@@ -97,7 +97,7 @@
 		    	('>= `((JGE (@ ,else_))))
 		    	('/= `((JNE (@ ,else_))))
 		    )
-		    '((MOVE (CONST nil) R2));;si ça n'a pas jump (voir le compi-if)
+		    '((MOVE (CONST 0) R2));;si ça n'a pas jump (voir le compi-if)
 		    `((@ ,else_))
 	)
 	)
